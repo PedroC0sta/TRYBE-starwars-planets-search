@@ -2,11 +2,16 @@ import React, { useEffect, useState } from 'react';
 import './App.css';
 
 function App() {
+  const [valor, setValor] = useState(0);
   const [planets, setPlanets] = useState('');
   const [searchName, setSearchName] = useState('');
+  const [column, setColumn] = useState('population');
+  const [submitFilter, setSubmitFilter] = useState('');
   const [planetsFilted, setPlanetsFilted] = useState('');
+  const [comparison, setComparison] = useState('maior que');
   const planetsUrl = 'https://swapi-trybe.herokuapp.com/api/planets/';
 
+  // useEffect save in Planets response API
   useEffect(() => {
     const planetsFetch = () => fetch(planetsUrl)
       .then((response) => response.json())
@@ -15,15 +20,39 @@ function App() {
     planetsFetch();
   }, []);
 
+  // useEffect aplica filtros
   useEffect(() => {
-    setPlanetsFilted(
-      planets && planets.filter((planet) => (
-        planet.name.toLowerCase().includes(searchName.toLowerCase())
-      )),
-    );
-  }, [searchName, planets]);
+    // filtro name
+    if (searchName) {
+      setPlanetsFilted(
+        planets.filter((planet) => (
+          planet.name.toLowerCase().includes(searchName.toLowerCase())
+        )),
+      );
+    } else if (submitFilter) {
+      // filtro por quantidade
+      const { filterByNumericValues } = submitFilter;
+      if (filterByNumericValues.comparison === 'maior que') {
+        setPlanetsFilted(planets.filter((planet) => (
+          Number(planet[filterByNumericValues.column]) > filterByNumericValues.value
+        )));
+      } else if (filterByNumericValues.comparison === 'menor que') {
+        setPlanetsFilted(planets.filter((planet) => (
+          Number(planet[filterByNumericValues.column]) < filterByNumericValues.value
+        )));
+      } else if (filterByNumericValues.comparison === 'igual a') {
+        setPlanetsFilted(planets.filter((planet) => (
+          Number(planet[filterByNumericValues.column]) === filterByNumericValues.value
+        )));
+      }
+    } else {
+      // default valor da lista de planetas
+      setPlanetsFilted(planets);
+    }
+  }, [searchName, planets, submitFilter]);
 
   function handleMapPlanets() {
+    // funçao que popula a tabela de planetas com um map usanto o state planetsFilted
     return planetsFilted && planetsFilted.map(({
       rotation_period: rotationPeriod,
       orbital_period: orbitalPeriod,
@@ -54,6 +83,7 @@ function App() {
   return (
     <body>
       <section>
+        {/* Input filtro por nome, salva no state SearchName */}
         <input
           type="text"
           data-testid="name-filter"
@@ -62,6 +92,46 @@ function App() {
           onChange={ ({ target: { value } }) => setSearchName(value) }
         />
       </section>
+      <forms>
+        {/* Forms que add filtro numerico salvando em um objeto
+        dentro do state SubmitFilter */}
+        <select
+          data-testid="column-filter"
+          onChange={ ({ target }) => setColumn(target.value) }
+          value={ column }
+        >
+          <option value="population">population</option>
+          <option value="orbital_period">orbital_period</option>
+          <option value="diameter">diameter</option>
+          <option value="rotation_period">rotation_period</option>
+          <option value="surface_water">surface_water</option>
+        </select>
+        <select
+          data-testid="comparison-filter"
+          onChange={ ({ target }) => setComparison(target.value) }
+          value={ comparison }
+        >
+          <option value="maior que">maior que</option>
+          <option value="menor que">menor que</option>
+          <option value="igual a">igual a</option>
+        </select>
+        <input
+          type="text"
+          data-testid="value-filter"
+          onChange={ ({ target }) => setValor(target.value) }
+          value={ valor }
+        />
+        <button
+          type="submit"
+          data-testid="button-filter"
+          onClick={ () => setSubmitFilter(
+            { filterByNumericValues: { column, comparison, value: Number(valor) } },
+          ) }
+        >
+          Filtrar
+
+        </button>
+      </forms>
       <section>
         <table>
           <tr>
