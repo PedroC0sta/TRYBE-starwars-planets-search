@@ -3,17 +3,28 @@ import './App.css';
 
 function App() {
   const [planets, setPlanets] = useState('');
+  const [searchName, setSearchName] = useState('');
+  const [planetsFilted, setPlanetsFilted] = useState('');
   const planetsUrl = 'https://swapi-trybe.herokuapp.com/api/planets/';
 
   useEffect(() => {
     const planetsFetch = () => fetch(planetsUrl)
       .then((response) => response.json())
-      .then(({ results }) => setPlanets(results));
+      .then(({ results }) => setPlanets(results))
+      .catch((err) => console.log(err));
     planetsFetch();
   }, []);
 
-  function handleCharacteristicsOfPlanets() {
-    return planets && planets.map(({
+  useEffect(() => {
+    setPlanetsFilted(
+      planets && planets.filter((planet) => (
+        planet.name.toLowerCase().includes(searchName.toLowerCase())
+      )),
+    );
+  }, [searchName, planets]);
+
+  function handleMapPlanets() {
+    return planetsFilted && planetsFilted.map(({
       rotation_period: rotationPeriod,
       orbital_period: orbitalPeriod,
       surface_water: surfaceWater,
@@ -43,6 +54,15 @@ function App() {
   return (
     <body>
       <section>
+        <input
+          type="text"
+          data-testid="name-filter"
+          placeholder="Search Name"
+          value={ searchName }
+          onChange={ ({ target: { value } }) => setSearchName(value) }
+        />
+      </section>
+      <section>
         <table>
           <tr>
             <th>Name</th>
@@ -60,7 +80,7 @@ function App() {
             <th>Url</th>
           </tr>
 
-          {handleCharacteristicsOfPlanets()}
+          {handleMapPlanets()}
 
         </table>
       </section>
