@@ -20,8 +20,8 @@ function App() {
     planetsFetch();
   }, []);
 
-  // useEffect aplica filtros
   useEffect(() => {
+    setPlanetsFilted(planets);
     // filtro name
     if (searchName) {
       setPlanetsFilted(
@@ -29,27 +29,37 @@ function App() {
           planet.name.toLowerCase().includes(searchName.toLowerCase())
         )),
       );
-    } else if (submitFilter) {
-      // filtro por quantidade
-      const { filterByNumericValues } = submitFilter;
-      if (filterByNumericValues.comparison === 'maior que') {
-        setPlanetsFilted(planets.filter((planet) => (
-          Number(planet[filterByNumericValues.column]) > filterByNumericValues.value
-        )));
-      } else if (filterByNumericValues.comparison === 'menor que') {
-        setPlanetsFilted(planets.filter((planet) => (
-          Number(planet[filterByNumericValues.column]) < filterByNumericValues.value
-        )));
-      } else if (filterByNumericValues.comparison === 'igual a') {
-        setPlanetsFilted(planets.filter((planet) => (
-          Number(planet[filterByNumericValues.column]) === filterByNumericValues.value
-        )));
-      }
-    } else {
-      // default valor da lista de planetas
-      setPlanetsFilted(planets);
     }
-  }, [searchName, planets, submitFilter]);
+  }, [searchName, planets]);
+
+  useEffect(() => {
+    /* effect percorre a lista de filtros numericos e filtra sempre baseado na ultima
+    lista atualizada de planetas, com um for each para percorrer os filtros e condicional
+    que pega o ultimo state filtrado do planetsFilted e filtra baseado do filtro atual
+    */
+    if (submitFilter) {
+      submitFilter.forEach((filtro) => {
+        if (filtro.filterByNumericValues.comparison === 'maior que') {
+          setPlanetsFilted((prevPlanets) => prevPlanets.filter((planet) => (
+            Number(planet[filtro.filterByNumericValues.column])
+          > filtro.filterByNumericValues.value
+          )));
+        } else if (filtro.filterByNumericValues.comparison === 'menor que') {
+          setPlanetsFilted((prevPlanets) => prevPlanets.filter((planet) => (
+            Number(
+              planet[filtro.filterByNumericValues.column],
+            ) < filtro.filterByNumericValues.value
+          )));
+        } else if (filtro.filterByNumericValues.comparison === 'igual a') {
+          setPlanetsFilted((prevPlanets) => prevPlanets.filter((planet) => (
+            Number(
+              planet[filtro.filterByNumericValues.column],
+            ) === filtro.filterByNumericValues.value
+          )));
+        }
+      });
+    }
+  }, [submitFilter]);
 
   function handleMapPlanets() {
     // funçao que popula a tabela de planetas com um map usanto o state planetsFilted
@@ -124,9 +134,8 @@ function App() {
         <button
           type="submit"
           data-testid="button-filter"
-          onClick={ () => setSubmitFilter(
-            { filterByNumericValues: { column, comparison, value: Number(valor) } },
-          ) }
+          onClick={ () => setSubmitFilter((state) => [...state, { filterByNumericValues:
+            { column, comparison, value: Number(valor) } }]) }
         >
           Filtrar
 
