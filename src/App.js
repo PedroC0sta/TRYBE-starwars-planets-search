@@ -15,8 +15,7 @@ function App() {
   useEffect(() => {
     const planetsFetch = () => fetch(planetsUrl)
       .then((response) => response.json())
-      .then(({ results }) => setPlanets(results))
-      .catch((err) => console.log(err));
+      .then(({ results }) => setPlanets(results));
     planetsFetch();
   }, []);
 
@@ -72,7 +71,10 @@ function App() {
       diameter, population,
       films, created, edited, url,
     }) => (
-      <tr key={ name }>
+      <tr
+        data-testid="render-planets"
+        key={ name }
+      >
         <td>{ name }</td>
         <td>{ rotationPeriod }</td>
         <td>{ orbitalPeriod }</td>
@@ -106,6 +108,7 @@ function App() {
         {/* Forms que add filtro numerico salvando em um objeto
         dentro do state SubmitFilter */}
         <select
+          name="column-filter"
           data-testid="column-filter"
           onChange={ ({ target }) => setColumn(target.value) }
           value={ column }
@@ -113,7 +116,13 @@ function App() {
           <option value="population">population</option>
           <option value="orbital_period">orbital_period</option>
           <option value="diameter">diameter</option>
-          <option value="rotation_period">rotation_period</option>
+          <option
+            name="rotation_period"
+            value="rotation_period"
+          >
+            rotation_period
+
+          </option>
           <option value="surface_water">surface_water</option>
         </select>
         <select
@@ -143,20 +152,20 @@ function App() {
       </forms>
       <section>
         <table>
-          <tr>
-            <th>Name</th>
-            <th>Rotation Period</th>
-            <th>Orbital Period</th>
-            <th>Diameter</th>
-            <th>Climate</th>
-            <th>Gravity</th>
-            <th>Terrain</th>
-            <th>Surface Water</th>
-            <th>Population</th>
-            <th>Films</th>
-            <th>Created</th>
-            <th>Edited</th>
-            <th>Url</th>
+          <tr role="rowheader">
+            <th role="columnheader">Name</th>
+            <th role="columnheader">Rotation Period</th>
+            <th role="columnheader">Orbital Period</th>
+            <th role="columnheader">Diameter</th>
+            <th role="columnheader">Climate</th>
+            <th role="columnheader">Gravity</th>
+            <th role="columnheader">Terrain</th>
+            <th role="columnheader">Surface Water</th>
+            <th role="columnheader">Population</th>
+            <th role="columnheader">Films</th>
+            <th role="columnheader">Created</th>
+            <th role="columnheader">Edited</th>
+            <th role="columnheader">Url</th>
           </tr>
 
           {handleMapPlanets()}
