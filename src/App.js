@@ -6,11 +6,13 @@ function App() {
   const [planets, setPlanets] = useState('');
   const [searchName, setSearchName] = useState('');
   const [column, setColumn] = useState('population');
-  const [submitFilter, setSubmitFilter] = useState('');
+  const [options, setOptions] = useState(['population', 'orbital_period',
+    'diameter', 'rotation_period', 'surface_water']);
+  const [submitFilter, setSubmitFilter] = useState([]);
   const [planetsFilted, setPlanetsFilted] = useState('');
   const [comparison, setComparison] = useState('maior que');
+  // const choices = ;
   const planetsUrl = 'https://swapi-trybe.herokuapp.com/api/planets/';
-
   // useEffect save in Planets response API
   useEffect(() => {
     const planetsFetch = () => fetch(planetsUrl)
@@ -59,6 +61,34 @@ function App() {
       });
     }
   }, [submitFilter]);
+
+  function handleMapFilterNumeric() {
+    // Renderiza os filtros na tela
+    return (
+      submitFilter && submitFilter.map(({
+        filterByNumericValues },
+      index) => (
+        <div
+          key={ index }
+          data-testid="filter"
+        >
+          <p>
+            { `Coluna: ${filterByNumericValues.column}
+            Comparação: ${filterByNumericValues.comparison}
+            Valor: ${filterByNumericValues.value}`}
+          </p>
+          <button
+            type="button"
+          >
+            {' '}
+            excloi
+            {' '}
+
+          </button>
+        </div>
+      ))
+    );
+  }
 
   function handleMapPlanets() {
     // funçao que popula a tabela de planetas com um map usanto o state planetsFilted
@@ -113,17 +143,9 @@ function App() {
           onChange={ ({ target }) => setColumn(target.value) }
           value={ column }
         >
-          <option value="population">population</option>
-          <option value="orbital_period">orbital_period</option>
-          <option value="diameter">diameter</option>
-          <option
-            name="rotation_period"
-            value="rotation_period"
-          >
-            rotation_period
-
-          </option>
-          <option value="surface_water">surface_water</option>
+          {options.map((e) => (
+            <option key={ e } value={ e }>{e}</option>
+          )) }
         </select>
         <select
           data-testid="comparison-filter"
@@ -143,13 +165,22 @@ function App() {
         <button
           type="submit"
           data-testid="button-filter"
-          onClick={ () => setSubmitFilter((state) => [...state, { filterByNumericValues:
-            { column, comparison, value: Number(valor) } }]) }
+          onClick={ () => {
+            const optionsFilted = () => options.splice(options.indexOf(column), 1);
+            optionsFilted();
+            setOptions(options);
+            setSubmitFilter((state) => [...state, { filterByNumericValues:
+            { column, comparison, value: Number(valor) } }]);
+            setColumn(options[0]);
+          } }
         >
           Filtrar
 
         </button>
       </forms>
+      <section>
+        {handleMapFilterNumeric()}
+      </section>
       <section>
         <table>
           <tr role="rowheader">
