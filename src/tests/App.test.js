@@ -90,5 +90,52 @@ describe('testes de renderizacao e filtro de tabelas', () => {
     const renderPlanets = await waitFor(() => screen.getAllByTestId("render-planets"));
     expect(renderPlanets.length).toBe(1);
     expect(screen.getAllByTestId("render-planets")[0].children[0].innerHTML).toBe('Coruscant');
+  });
+  test('Filter menor que', async () => {
+
+    global.fetch = jest.fn(() => Promise.resolve({
+      json: () => Promise.resolve(mockApi),
+    }));
+    render(<App />);
+
+    await waitFor(() => screen.getAllByTestId("render-planets"))
+    const selectColumn = screen.getByTestId("column-filter");
+    const selectComparison = screen.getByTestId("comparison-filter");
+    const inputValor = screen.getByTestId("value-filter");
+    const btnSubmitComparison = screen.getByTestId("button-filter")
+
+    userEvent.selectOptions(selectColumn,'orbital_period');
+    expect(selectColumn.value).toBe('orbital_period');
+    userEvent.selectOptions(selectComparison,'menor que');
+    expect(selectComparison.value).toBe('menor que');
+    userEvent.type(inputValor,'{selectall}{backspace}400');
+    expect(inputValor.value).toBe('400');
+    userEvent.click(btnSubmitComparison);
+    await waitFor(() => screen.getAllByTestId("render-planets"));
+    expect(screen.getAllByTestId("render-planets").length).toBe(5);
+  });
+  test('Filter menor que', async () => {
+
+    global.fetch = jest.fn(() => Promise.resolve({
+      json: () => Promise.resolve(mockApi),
+    }));
+    render(<App />);
+
+    await waitFor(() => screen.getAllByTestId("render-planets"))
+    const selectColumn = screen.getByTestId("column-filter");
+    const selectComparison = screen.getByTestId("comparison-filter");
+    const inputValor = screen.getByTestId("value-filter");
+    const btnSubmitComparison = screen.getByTestId("button-filter")
+
+    userEvent.selectOptions(selectColumn,'surface_water');
+    expect(selectColumn.value).toBe('surface_water');
+    userEvent.selectOptions(selectComparison,'igual a');
+    expect(selectComparison.value).toBe('igual a');
+    userEvent.type(inputValor,'{selectall}{backspace}8');
+    expect(inputValor.value).toBe('8');
+    userEvent.click(btnSubmitComparison);
+    await waitFor(() => screen.getAllByTestId("render-planets"));
+
+    expect(screen.getAllByTestId("render-planets").length).toBe(3);
   })
 });

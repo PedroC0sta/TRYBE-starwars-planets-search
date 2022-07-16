@@ -38,28 +38,27 @@ function App() {
     lista atualizada de planetas, com um for each para percorrer os filtros e condicional
     que pega o ultimo state filtrado do planetsFilted e filtra baseado do filtro atual
     */
-    if (submitFilter) {
-      submitFilter.forEach((filtro) => {
-        if (filtro.filterByNumericValues.comparison === 'maior que') {
-          setPlanetsFilted((prevPlanets) => prevPlanets.filter((planet) => (
-            Number(planet[filtro.filterByNumericValues.column])
+
+    submitFilter.forEach((filtro) => {
+      if (filtro.filterByNumericValues.comparison === 'maior que') {
+        setPlanetsFilted((prevPlanets) => prevPlanets.filter((planet) => (
+          Number(planet[filtro.filterByNumericValues.column])
           > filtro.filterByNumericValues.value
-          )));
-        } else if (filtro.filterByNumericValues.comparison === 'menor que') {
-          setPlanetsFilted((prevPlanets) => prevPlanets.filter((planet) => (
-            Number(
-              planet[filtro.filterByNumericValues.column],
-            ) < filtro.filterByNumericValues.value
-          )));
-        } else if (filtro.filterByNumericValues.comparison === 'igual a') {
-          setPlanetsFilted((prevPlanets) => prevPlanets.filter((planet) => (
-            Number(
-              planet[filtro.filterByNumericValues.column],
-            ) === filtro.filterByNumericValues.value
-          )));
-        }
-      });
-    }
+        )));
+      } else if (filtro.filterByNumericValues.comparison === 'menor que') {
+        setPlanetsFilted((prevPlanets) => prevPlanets.filter((planet) => (
+          Number(
+            planet[filtro.filterByNumericValues.column],
+          ) < filtro.filterByNumericValues.value
+        )));
+      } else if (filtro.filterByNumericValues.comparison === 'igual a') {
+        setPlanetsFilted((prevPlanets) => prevPlanets.filter((planet) => (
+          Number(
+            planet[filtro.filterByNumericValues.column],
+          ) === filtro.filterByNumericValues.value
+        )));
+      }
+    });
   }, [submitFilter]);
 
   function handleMapFilterNumeric() {
