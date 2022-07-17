@@ -134,8 +134,70 @@ describe('testes de renderizacao e filtro de tabelas', () => {
     userEvent.type(inputValor,'{selectall}{backspace}8');
     expect(inputValor.value).toBe('8');
     userEvent.click(btnSubmitComparison);
-    await waitFor(() => screen.getAllByTestId("render-planets"));
-
+    await waitFor(() => screen.getAllByTestId("render-planets"))
     expect(screen.getAllByTestId("render-planets").length).toBe(3);
-  })
+
+
+  });
+  test('funcionalidade do botão excluir' , async () => {
+    global.fetch = jest.fn(() => Promise.resolve({
+      json: () => Promise.resolve(mockApi),
+    }));
+    render(<App />);
+
+    await waitFor(() => screen.getAllByTestId("render-planets"))
+    const selectColumn = screen.getByTestId("column-filter");
+    const selectComparison = screen.getByTestId("comparison-filter");
+    const inputValor = screen.getByTestId("value-filter");
+    const btnSubmitComparison = screen.getByTestId("button-filter")
+
+    userEvent.selectOptions(selectColumn,'surface_water');
+    expect(selectColumn.value).toBe('surface_water');
+    userEvent.selectOptions(selectComparison,'igual a');
+    expect(selectComparison.value).toBe('igual a');
+    userEvent.type(inputValor,'{selectall}{backspace}8');
+    expect(inputValor.value).toBe('8');
+    userEvent.click(btnSubmitComparison);
+    await waitFor(() => screen.getAllByTestId("render-planets"))
+    expect(screen.getAllByTestId("render-planets").length).toBe(3);
+    const deletFilter = screen.getByRole('button', {name:'excloi'})
+    userEvent.click(deletFilter);
+    expect(screen.getAllByTestId("render-planets").length).toBe(10);
+  });
+  test('funcionalidade do botão excluir todos os filtros' , async () => {
+    global.fetch = jest.fn(() => Promise.resolve({
+      json: () => Promise.resolve(mockApi),
+    }));
+    render(<App />);
+
+    await waitFor(() => screen.getAllByTestId("render-planets"))
+    const selectColumn = screen.getByTestId("column-filter");
+    const selectComparison = screen.getByTestId("comparison-filter");
+    const inputValor = screen.getByTestId("value-filter");
+    const btnSubmitComparison = screen.getByTestId("button-filter")
+
+    userEvent.selectOptions(selectColumn,'surface_water');
+    expect(selectColumn.value).toBe('surface_water');
+    userEvent.selectOptions(selectComparison,'igual a');
+    expect(selectComparison.value).toBe('igual a');
+    userEvent.type(inputValor,'{selectall}{backspace}8');
+    expect(inputValor.value).toBe('8');
+    userEvent.click(btnSubmitComparison);
+    await waitFor(() => screen.getAllByTestId("render-planets"))
+    expect(screen.getAllByTestId("render-planets").length).toBe(3);
+
+    userEvent.selectOptions(selectColumn,'rotation_period');
+    expect(selectColumn.value).toBe('rotation_period');
+    userEvent.selectOptions(selectComparison,'maior que');
+    expect(selectComparison.value).toBe('maior que');
+    userEvent.type(inputValor,'{selectall}{backspace}20');
+    expect(inputValor.value).toBe('20');
+    userEvent.click(btnSubmitComparison);
+    await waitFor(() => screen.getAllByTestId("render-planets"))
+    expect(screen.getAllByTestId("render-planets").length).toBe(2);
+
+    const removeAllfilters = screen.getByTestId('button-remove-filters');
+    userEvent.click(removeAllfilters);
+    expect(screen.getAllByTestId("render-planets").length).toBe(10);
+});
 });

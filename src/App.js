@@ -11,10 +11,9 @@ function App() {
   const [submitFilter, setSubmitFilter] = useState([]);
   const [planetsFilted, setPlanetsFilted] = useState('');
   const [comparison, setComparison] = useState('maior que');
-  // const choices = ;
-  const planetsUrl = 'https://swapi-trybe.herokuapp.com/api/planets/';
   // useEffect save in Planets response API
   useEffect(() => {
+    const planetsUrl = 'https://swapi-trybe.herokuapp.com/api/planets/';
     const planetsFetch = () => fetch(planetsUrl)
       .then((response) => response.json())
       .then(({ results }) => setPlanets(results));
@@ -38,7 +37,7 @@ function App() {
     lista atualizada de planetas, com um for each para percorrer os filtros e condicional
     que pega o ultimo state filtrado do planetsFilted e filtra baseado do filtro atual
     */
-
+    setPlanetsFilted(planets);
     submitFilter.forEach((filtro) => {
       if (filtro.filterByNumericValues.comparison === 'maior que') {
         setPlanetsFilted((prevPlanets) => prevPlanets.filter((planet) => (
@@ -59,35 +58,7 @@ function App() {
         )));
       }
     });
-  }, [submitFilter]);
-
-  function handleMapFilterNumeric() {
-    // Renderiza os filtros na tela
-    return (
-      submitFilter && submitFilter.map(({
-        filterByNumericValues },
-      index) => (
-        <div
-          key={ index }
-          data-testid="filter"
-        >
-          <p>
-            { `Coluna: ${filterByNumericValues.column}
-            Comparação: ${filterByNumericValues.comparison}
-            Valor: ${filterByNumericValues.value}`}
-          </p>
-          <button
-            type="button"
-          >
-            {' '}
-            excloi
-            {' '}
-
-          </button>
-        </div>
-      ))
-    );
-  }
+  }, [planets, submitFilter]);
 
   function handleMapPlanets() {
     // funçao que popula a tabela de planetas com um map usanto o state planetsFilted
@@ -178,7 +149,46 @@ function App() {
         </button>
       </forms>
       <section>
-        {handleMapFilterNumeric()}
+        {submitFilter && submitFilter.map(({
+          filterByNumericValues },
+        index) => (
+          <div
+            key={ index }
+            data-testid="filter"
+          >
+            <p>
+              { `Coluna: ${filterByNumericValues.column}
+            Comparação: ${filterByNumericValues.comparison}
+            Valor: ${filterByNumericValues.value}`}
+            </p>
+            <button
+              type="button"
+              onClick={ () => {
+                const filters = submitFilter.slice();
+                filters.splice(index, 1);
+                setSubmitFilter(filters);
+                setOptions((option) => [...option, filterByNumericValues.column]);
+              } }
+            >
+              excloi
+            </button>
+          </div>
+        ))}
+        <button
+          type="button"
+          data-testid="button-remove-filters"
+          onClick={ () => {
+            submitFilter.forEach(({ filterByNumericValues }) => {
+              setOptions((option) => [...option, filterByNumericValues.column]);
+            });
+
+            setSubmitFilter([]);
+          } }
+        >
+          Remover todas filtragens
+
+        </button>
+
       </section>
       <section>
         <table>
